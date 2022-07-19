@@ -1,10 +1,12 @@
 const express = require('express')
+const cors = require('cors')
 const settings = require('./settings')
 const { Configuration, OpenAIApi } = require('openai')
 const app = express()
 const port = 8000
 
 app.use(express.json());
+app.use(cors())
 
 const configuration = new Configuration({
     organization: "org-3SRdJ2nJnnolqEoHq8z6jqHN",
@@ -30,8 +32,6 @@ app.get('/health', async (req, res) => {
 
 app.post('/descriptions', async (req, res) => {
 
-    console.log(req.body)
-
     const { title, keywords, description } = req.body
 
     const prompt = generatePrompt(title, keywords, description)
@@ -39,11 +39,17 @@ app.post('/descriptions', async (req, res) => {
     const completion = await openai.createCompletion({
         model: "text-davinci-002",
         prompt,
-        temperature: 0.6
+        temperature: 0.6,
+        n: 1,
+        max_tokens: 80,
+        top_p: 1.0,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0,
     })
 
+    const { choices } = completion.data
 
-    res.json({ text: completion.data })
+    res.json({ choices })
 })
 
 app.listen(port, () => {
