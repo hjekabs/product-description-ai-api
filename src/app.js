@@ -2,7 +2,7 @@ const express = require('express')
 const settings = require('./settings')
 const { Configuration, OpenAIApi } = require('openai')
 const app = express()
-const port = 3030
+const port = 8000
 
 app.use(express.json());
 
